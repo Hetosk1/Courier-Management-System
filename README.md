@@ -67,11 +67,3 @@ Enter your choice: 1
 
 ## Contributions
 Contributions are welcome! Please fork the repository and submit a pull request with your enhancements or fixes.
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-Feel free to customize this README file further based on your specific requirements or additional features implemented in your project!
-
-Citations:
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/38070586/694e803a-bb75-4ba4-af03-8c436036721b/paste.txt
