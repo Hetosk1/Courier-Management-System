@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-
 using namespace std;
 
 const int MAX_COURIERS = 100;  
