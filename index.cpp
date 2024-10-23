@@ -4,12 +4,12 @@
 
 using namespace std;
 
-const int MAX_COURIERS = 100;  // Maximum number of couriers
+const int MAX_COURIERS = 100;  
 
 class Courier {
 protected:
-    static int id_counter;  // Static variable for unique ID
-    int id;                 // Instance variable for individual ID
+    static int id_counter;
+    int id;
     string recipientName;
     string status;
     double weight;
@@ -19,7 +19,7 @@ protected:
 
 public:
     Courier(const string& name, double weightVal, double distanceVal, double costVal, const string& date) {
-        id = ++id_counter;  // Increment and assign the static counter to the instance
+        id = ++id_counter;
         recipientName = name;
         weight = weightVal;
         distance = distanceVal;
@@ -46,7 +46,6 @@ public:
     }
 };
 
-// Initialize the static variable
 int Courier::id_counter = 0;
 
 class ExpressCourier : public Courier {
@@ -137,7 +136,7 @@ public:
         for (int i = 0; i < courierCount; ++i) {
             if (couriers[i]->getId() == id) {
                 delete couriers[i];
-                couriers[i] = couriers[--courierCount]; // Move last courier into the deleted spot
+                couriers[i] = couriers[--courierCount];
                 cout << "Courier deleted successfully!\n";
                 return;
             }
@@ -145,7 +144,7 @@ public:
         for (int i = 0; i < expressCourierCount; ++i) {
             if (expressCouriers[i]->getId() == id) {
                 delete expressCouriers[i];
-                expressCouriers[i] = expressCouriers[--expressCourierCount]; // Move last courier into the deleted spot
+                expressCouriers[i] = expressCouriers[--expressCourierCount];
                 cout << "Express courier deleted successfully!\n";
                 return;
             }
@@ -190,10 +189,10 @@ int main() {
                 cin >> weight;
                 if (cin.fail() || weight <= 0) {
                     cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for weight.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break; // Valid weight
                 }
             }
@@ -204,10 +203,10 @@ int main() {
                 cin >> distance;
                 if (cin.fail() || distance <= 0) {
                     cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for distance.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break; // Valid distance
                 }
             }
@@ -221,42 +220,39 @@ int main() {
             string name, deliveryDate;
             double weight, distance;
 
-            // Validate name
             while (true) {
                 cout << "Enter Recipient Name: ";
                 cin.ignore();
                 getline(cin, name);
                 if (name.find_first_of("0123456789") == string::npos) {
-                    break; // Valid name
+                    break;
                 }
                 cout << "Error: Name cannot contain digits. Please enter again.\n";
             }
 
-            // Validate weight
             while (true) {
                 cout << "Enter Weight of package (kg): ";
                 cin >> weight;
                 if (cin.fail() || weight <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for weight.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
-                    break; // Valid weight
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    break;
                 }
             }
 
-            // Validate distance
             while (true) {
                 cout << "Enter Distance (km): ";
                 cin >> distance;
                 if (cin.fail() || distance <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for distance.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
-                    break; // Valid distance
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    break;
                 }
             }
 
@@ -272,16 +268,15 @@ int main() {
             int id;
             string status;
 
-            // Validate ID
             while (true) {
                 cout << "Enter Courier ID to update status: ";
                 cin >> id;
                 if (cin.fail() || id <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for ID.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break; // Valid ID
                 }
             }
@@ -298,12 +293,12 @@ int main() {
                 cout << "Enter Courier ID to delete: ";
                 cin >> id;
                 if (cin.fail() || id <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for ID.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the rest of the line
-                    break; // Valid ID
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    break;
                 }
             }
 
