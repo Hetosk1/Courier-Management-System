@@ -1,9 +1,55 @@
 #include <iostream>
 #include <string>
 #include <limits>
+
 using namespace std;
 
-const int MAX_COURIERS = 100;  
+const int MAX_COURIERS = 100;
+
+struct Date {
+    int day;
+    int month;
+    int year;
+};
+
+bool validateDate(const Date& date, const Date& today) {
+    if (date.year < 2024) {
+        cout << "Error: Year should be 2024 or later.\n";
+        return false;
+    }
+    if (date.month < 1 || date.month > 12) {
+        cout << "Error: Invalid month. Please enter a valid month (1-12).\n";
+        return false;
+    }
+    if (date.day < 1 || date.day > 31) {
+        cout << "Error: Invalid day. Please enter a valid day (1-31).\n";
+        return false;
+    }
+
+    if (date.month == 2) {
+        bool leapYear = (date.year % 4 == 0 && date.year % 100 != 0) || (date.year % 400 == 0);
+        int maxDays = leapYear ? 29 : 28;
+        if (date.day > maxDays) {
+            cout << "Error: Invalid day for February in the given year.\n";
+            return false;
+        }
+    } else if (date.month == 4 || date.month == 6 || date.month == 9 || date.month == 11) {
+        if (date.day > 30) {
+            cout << "Error: Invalid day. This month has only 30 days.\n";
+            return false;
+        }
+    }
+    
+    // Date comparison logic
+    if (date.year < today.year ||
+        (date.year == today.year && date.month < today.month) ||
+        (date.year == today.year && date.month == today.month && date.day < today.day)) {
+        cout << "Error: Delivery date cannot be before today's date.\n";
+        return false;
+    }
+
+    return true;  // Valid date
+}
 
 class Courier {
 protected:
@@ -14,17 +60,12 @@ protected:
     double weight;
     double distance;
     double cost;
-    string deliveryDate;
+    Date deliveryDate;
 
 public:
-    Courier(const string& name, double weightVal, double distanceVal, double costVal, const string& date) {
+    Courier(const string& name, double weightVal, double distanceVal, double costVal, const Date& date)
+        : recipientName(name), weight(weightVal), distance(distanceVal), cost(costVal), deliveryDate(date), status("Collected") {
         id = ++id_counter;
-        recipientName = name;
-        weight = weightVal;
-        distance = distanceVal;
-        cost = costVal;
-        deliveryDate = date;
-        status = "Collected";
     }
 
     virtual void updateStatus(const string& newStatus) {
@@ -32,12 +73,12 @@ public:
     }
 
     virtual void displayDetails() const {
-        cout << "ID: " << id << ", Recipient: " << recipientName
+        cout << "\nID: " << id << ", Recipient: " << recipientName
              << ", Status: " << status
              << ", Weight: " << weight << " kg"
              << ", Distance: " << distance << " km"
              << ", Cost: $" << cost
-             << ", Delivery Date: " << deliveryDate << "\n";
+             << ", Delivery Date: " << deliveryDate.day << "/" << deliveryDate.month << "/" << deliveryDate.year << "\n";
     }
 
     int getId() const {
@@ -52,10 +93,10 @@ private:
     double expressCharge;
 
 public:
-    ExpressCourier(const string& name, double weightVal, double distanceVal, double costVal, const string& date)
+    ExpressCourier(const string& name, double weightVal, double distanceVal, double costVal, const Date& date)
         : Courier(name, weightVal, distanceVal, costVal, date) {
         expressCharge = 15.0;
-        cost += expressCharge; 
+        cost += expressCharge;
     }
 
     void displayDetails() const override {
@@ -64,23 +105,23 @@ public:
              << ", Weight: " << weight << " kg"
              << ", Distance: " << distance << " km"
              << ", Cost: $" << cost << " (includes express charge of $" << expressCharge << ")"
-             << ", Delivery Date: " << deliveryDate << "\n";
+             << ", Delivery Date: " << deliveryDate.day << "/" << deliveryDate.month << "/" << deliveryDate.year << "\n";
     }
 };
 
 class CourierManagement {
 private:
-    Courier* couriers[MAX_COURIERS];          
-    ExpressCourier* expressCouriers[MAX_COURIERS]; 
+    Courier* couriers[MAX_COURIERS];
+    ExpressCourier* expressCouriers[MAX_COURIERS];
     int courierCount = 0;
     int expressCourierCount = 0;
 
     double calculateCost(double weight, double distance) {
-        return weight * 0.5 + distance * 0.2; 
+        return weight * 0.5 + distance * 0.2;
     }
 
 public:
-    void addCourier(const string& name, double weight, double distance, const string& deliveryDate) {
+    void addCourier(const string& name, double weight, double distance, const Date& deliveryDate) {
         if (courierCount < MAX_COURIERS) {
             double cost = calculateCost(weight, distance);
             couriers[courierCount++] = new Courier(name, weight, distance, cost, deliveryDate);
@@ -90,7 +131,7 @@ public:
         }
     }
 
-    void addExpressCourier(const string& name, double weight, double distance, const string& deliveryDate) {
+    void addExpressCourier(const string& name, double weight, double distance, const Date& deliveryDate) {
         if (expressCourierCount < MAX_COURIERS) {
             double cost = calculateCost(weight, distance);
             expressCouriers[expressCourierCount++] = new ExpressCourier(name, weight, distance, cost, deliveryDate);
@@ -104,6 +145,7 @@ public:
         if (courierCount == 0 && expressCourierCount == 0) {
             cout << "No couriers found.\n";
         } else {
+            cout << "\n--- List of Couriers ---\n";
             for (int i = 0; i < courierCount; ++i) {
                 couriers[i]->displayDetails();
             }
@@ -152,9 +194,19 @@ public:
     }
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc != 4) {
+        cout << "Usage: " << argv[0] << " <day> <month> <year>\n";
+        return 1;
+    }
+
     CourierManagement cm;
     int choice;
+
+    Date today;
+    today.day = stoi(argv[1]);  
+    today.month = stoi(argv[2]); 
+    today.year = stoi(argv[3]);   
 
     do {
         cout << "\n--- Courier Management System ---\n";
@@ -168,56 +220,9 @@ int main() {
         cin >> choice;
 
         if (choice == 1) {
-            string name, deliveryDate;
+            string name;
             double weight, distance;
-
-            // Validate name
-            while (true) {
-                cout << "Enter Recipient Name: ";
-                cin.ignore();
-                getline(cin, name);
-                if (name.find_first_of("0123456789") == string::npos) {
-                    break; // Valid name
-                }
-                cout << "Error: Name cannot contain digits. Please enter again.\n";
-            }
-
-            // Validate weight
-            while (true) {
-                cout << "Enter Weight of package (kg): ";
-                cin >> weight;
-                if (cin.fail() || weight <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Error: Please enter a valid positive number for weight.\n";
-                } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break; // Valid weight
-                }
-            }
-
-            // Validate distance
-            while (true) {
-                cout << "Enter Distance (km): ";
-                cin >> distance;
-                if (cin.fail() || distance <= 0) {
-                    cin.clear(); // Clear the error flag
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Error: Please enter a valid positive number for distance.\n";
-                } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break; // Valid distance
-                }
-            }
-
-            cout << "Enter Estimated Delivery Date: ";
-            cin >> deliveryDate;
-
-            cm.addCourier(name, weight, distance, deliveryDate);
-        } 
-        else if (choice == 2) {
-            string name, deliveryDate;
-            double weight, distance;
+            Date deliveryDate;
 
             while (true) {
                 cout << "Enter Recipient Name: ";
@@ -226,18 +231,17 @@ int main() {
                 if (name.find_first_of("0123456789") == string::npos) {
                     break;
                 }
-                cout << "Error: Name cannot contain digits. Please enter again.\n";
+                cout << "Error: Recipient name cannot contain numbers.\n";
             }
 
             while (true) {
                 cout << "Enter Weight of package (kg): ";
                 cin >> weight;
-                if (cin.fail() || weight <= 0) {
+                if (cin.fail() || weight <= 0 || weight > 20) {
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Error: Please enter a valid positive number for weight.\n";
+                    cout << "Error: Please enter a valid weight (under 20 kg).\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break;
                 }
             }
@@ -250,57 +254,85 @@ int main() {
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Error: Please enter a valid positive number for distance.\n";
                 } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break;
                 }
             }
 
-            cout << "Enter Estimated Delivery Date: ";
-            cin >> deliveryDate;
+            cout << "Enter Delivery Date (dd mm yyyy): ";
+            cin >> deliveryDate.day >> deliveryDate.month >> deliveryDate.year;
 
-            cm.addExpressCourier(name, weight, distance, deliveryDate);
-        } 
-        else if (choice == 3) {
+			while(!validateDate(deliveryDate, today)){
+				cout << "Enter Delivery Date (dd mm yyyy): ";
+				cin >> deliveryDate.day >> deliveryDate.month >> deliveryDate.year;	
+			}
+			
+			cm.addCourier(name, weight, distance, deliveryDate);
+
+            
+        } else if (choice == 2) {
+            string name;
+            double weight, distance;
+            Date deliveryDate;
+
+            while (true) {
+                cout << "Enter Recipient Name: ";
+                cin.ignore();
+                getline(cin, name);
+                if (name.find_first_of("0123456789") == string::npos) {
+                    break;
+                }
+                cout << "Error: Recipient name cannot contain numbers.\n";
+            }
+
+            while (true) {
+                cout << "Enter Weight of package (kg): ";
+                cin >> weight;
+                if (cin.fail() || weight <= 0 || weight > 20) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Error: Please enter a valid weight (under 20 kg).\n";
+                } else {
+                    break;
+                }
+            }
+
+            while (true) {
+                cout << "Enter Distance (km): ";
+                cin >> distance;
+                if (cin.fail() || distance <= 0) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Error: Please enter a valid positive number for distance.\n";
+                } else {
+                    break;
+                }
+            }
+
+            cout << "Enter Delivery Date (dd mm yyyy): ";
+            cin >> deliveryDate.day >> deliveryDate.month >> deliveryDate.year;
+
+        	while(!validateDate(deliveryDate, today)) {
+        		cout << "Enter Delivery Date (dd mm yyyy): ";
+        		cin >> deliveryDate.day >> deliveryDate.month >> deliveryDate.year;
+            } 
+                cm.addExpressCourier(name, weight, distance, deliveryDate);
+            
+        } else if (choice == 3) {
             cm.listCouriers();
-        } 
-        else if (choice == 4) {
+        } else if (choice == 4) {
             int id;
             string status;
 
-            while (true) {
-                cout << "Enter Courier ID to update status: ";
-                cin >> id;
-                if (cin.fail() || id <= 0) {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Error: Please enter a valid positive number for ID.\n";
-                } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break; // Valid ID
-                }
-            }
-
-            cout << "Enter New Status (Shipped/Received): ";
-            cin >> status;
+            cout << "Enter Courier ID to update: ";
+            cin >> id;
+            cout << "Enter New Status: ";
+            cin.ignore();
+            getline(cin, status);
             cm.updateCourierStatus(id, status);
-        } 
-        else if (choice == 5) {
+        } else if (choice == 5) {
             int id;
-
-            // Validate ID
-            while (true) {
-                cout << "Enter Courier ID to delete: ";
-                cin >> id;
-                if (cin.fail() || id <= 0) {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Error: Please enter a valid positive number for ID.\n";
-                } else {
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break;
-                }
-            }
-
+            cout << "Enter Courier ID to delete: ";
+            cin >> id;
             cm.deleteCourier(id);
         }
     } while (choice != 6);
