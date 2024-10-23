@@ -1,7 +1,7 @@
 # Courier Management System
 
 ## Purpose
-The **Courier Management System** is designed to facilitate the management of courier deliveries, including both regular and express services. It allows users to add, update, delete, and list couriers while maintaining a clear overview of their status and details.
+The **Courier Management System** is designed to facilitate the management of courier deliveries, including both regular and express services. It allows users to add, update, delete, and list couriers while maintaining a clear overview of their status and details. 
 
 ## Overview
 This system is implemented in C++ and leverages object-oriented programming principles. It features a `Courier` class for standard deliveries and an `ExpressCourier` class that extends `Courier` to include additional charges for expedited services. A `CourierManagement` class manages the collection of couriers, providing functionalities to add, update, list, and delete courier records.
